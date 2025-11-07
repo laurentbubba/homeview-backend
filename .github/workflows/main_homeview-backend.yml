@@ -26,6 +26,7 @@ jobs:
             - name: npm install, build, and test
               run: |
                   npm install
+                  npx prisma generate
                   npm run build --if-present
                   npm run test --if-present
 
@@ -34,6 +35,9 @@ jobs:
               env:
                   DATABASE_URL: ${{ secrets.DATABASE_URL }}
               run: npx prisma migrate deploy
+
+            - name: List artifact contents (debug)
+              run: ls -R ./dist
 
             - name: Upload artifact for deployment job
               uses: actions/upload-artifact@v4
