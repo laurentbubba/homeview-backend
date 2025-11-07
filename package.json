@@ -1,0 +1,52 @@
+{
+  "name": "homeview-project",
+  "version": "0.0.1",
+  "description": "A repository to work on home projects, to be deployed to a website and later also apps. Will be used for a task manager and other ideas.",
+  "main": "app.ts",
+  "prisma": {
+    "schema": "repository/prisma/schema.prisma"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon -L app.ts --delay 3",
+    "build": "tsc"
+  },
+  "nodemonConfig": {
+    "ext": "ts",
+    "delay": "3",
+    "execMap": {
+      "ts": "ts-node"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laurentbubba/homeview-project.git"
+  },
+  "author": "Laurent Bubba",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/laurentbubba/homeview-project/issues"
+  },
+  "homepage": "https://github.com/laurentbubba/homeview-project#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.3",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.1.3",
+    "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.2",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
