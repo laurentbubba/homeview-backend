@@ -3,11 +3,12 @@
 
 name: Build and deploy Node.js app to Azure Web App - homeview-backend
 
-on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+# disabled for now
+# on:
+#     push:
+#         branches:
+#             - main
+#     workflow_dispatch:
 
 jobs:
     build:
