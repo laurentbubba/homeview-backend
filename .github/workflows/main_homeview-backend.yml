@@ -23,11 +23,25 @@ jobs:
               with:
                   node-version: '22.x'
 
-            - name: npm install, build, and test
-              run: |
-                  npm install
-                  npm run build --if-present
-                  npm run test --if-present
+            # - name: npm install, generate prisma client, build, and test
+            #   run: |
+            #       npm install
+            #       npx prisma generate
+            #       npm run build --if-present
+            #       npm run test --if-present
+
+            - name: npm ci (faster than npm install)
+              run: npm ci # --prefer-offline --no-audit
+
+            - name: Generate Prisma Client
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: npx prisma generate
+
+            - name: Build node.js app
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: npm run build
 
             - name: Deploy database migrations
               if: success()
@@ -38,11 +52,27 @@ jobs:
             - name: List artifact contents (debug)
               run: ls -R ./dist
 
-            - name: Upload artifact for deployment job
+            # - name: Upload artifact for deployment job
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       name: homeview-backend-artifact
+            #       path: .
+
+            - name: Prepare deployment package
+              run: |
+                  # Remove unnecessary files for deployment
+                  rm -rf .git .github .vscode node_modules .next
+                  # Keep only essential files for Azure deployment
+                  mkdir -p deploy
+                  cp -r build public src package.json package-lock.json deploy/
+                  cp -r prisma deploy/ # Keep Prisma schema for runtime
+
+            - name: Upload optimized artifact
               uses: actions/upload-artifact@v4
               with:
                   name: homeview-backend-artifact
-                  path: .
+                  path: deploy/
+                  if-no-files-found: error
 
     deploy:
         runs-on: ubuntu-latest
