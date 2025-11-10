@@ -9,7 +9,7 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "dev": "nodemon -L app.ts --delay 3",
-    "build": "tsc && npx prisma generate",
+    "build": "npx prisma generate && tsc",
     "start": "node dist/app.js"
   },
   "nodemonConfig": {
