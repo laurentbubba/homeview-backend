@@ -75,7 +75,7 @@ jobs:
                       rm $ARTIFACT
 
                       # 4. npm clean install, build again
-                      npm ci --production
+                      npm ci --omit-dev
 
                       # 5. Zero-Downtime PM2 Reload
                       # Reloads the process using the newly extracted files
