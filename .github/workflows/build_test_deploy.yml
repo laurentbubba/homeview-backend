@@ -62,11 +62,12 @@ jobs:
               # Create a tarball containing only necessary files/folders
               run: |
                   tar -czvf homeview-backend-artifact.tar.gz \
-                  --exclude=.git \
-                  --exclude=dist \
-                  --exclude=jest.config.ts \
-                  --exclude=tsconfig.json \
-                  --exclude=coverage \
+                  --exclude='./.git' \
+                  --exclude='./dist' \
+                  --exclude='./jest.config.ts' \
+                  --exclude='./tsconfig.json' \
+                  --exclude='./coverage' \
+                  --exclude='./node_modules' \
                   .
 
             - name: Copy Artifact to VPS via SCP
