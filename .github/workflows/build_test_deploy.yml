@@ -82,8 +82,9 @@ jobs:
                       # 3. Clean up the temporary artifact file
                       rm $ARTIFACT
 
-                      # 4. npm clean install again
+                      # 4. npm clean install, build again
                       npm ci # --production
+                      npm run build
                       npx prisma generate
 
                       # 5. migrate prisma changes
@@ -91,4 +92,4 @@ jobs:
 
                       # 6. Zero-Downtime PM2 Reload
                       # Reloads the process using the newly extracted files
-                      pm2 reload ecosystem.config.js
+                      pm2 reload ecosystem.config.js --update-env
