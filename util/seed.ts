@@ -1,6 +1,6 @@
 // Execute: npx ts-node util/seed.ts
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 // import bcrypt from 'bcrypt';
 // import { set } from 'date-fns';
 

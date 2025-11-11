@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "A repository to work on home projects, to be deployed to a website and later also apps. Will be used for a task manager and other ideas.",
   "main": "app.ts",
+  "type": "module",
   "prisma": {
-    "schema": "repository/prisma/schema.prisma"
+    "schema": "prisma/schema.prisma"
   },
   "scripts": {
     "test": "jest --passWithNoTests",
@@ -40,7 +41,7 @@
     "prisma": "^6.19.0"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",

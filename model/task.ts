@@ -1,4 +1,4 @@
-import { Task as TaskPrisma } from '@prisma/client';
+import { Task as TaskPrisma } from '../generated/prisma';
 
 export class Task {
     private id?: number;
