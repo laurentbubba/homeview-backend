@@ -44,6 +44,7 @@ jobs:
               run: |
                   tar -czvf homeview-backend-dist.tar.gz \
                   dist \
+                  generated \
                   package.json \
                   package-lock.json
 
