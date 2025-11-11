@@ -21,7 +21,9 @@ jobs:
                   node-version: '22.x'
 
             - name: Clean Install (has postinstall prisma generate)
-              run: npm ci # --prefer-offline --no-audit
+              run: |
+                  npm ci # --prefer-offline --no-audit
+                  npx prisma generate
 
             - name: Build App
               env:
@@ -31,8 +33,8 @@ jobs:
             - name: Tests
               run: npm run test --if-present
 
-            - name: (debug) List build contents
-              run: ls -R .
+            # - name: (debug) List build contents
+            #   run: ls -R .
 
             # - name: Upload artifact for deployment job
             #   uses: actions/upload-artifact@v4
@@ -59,55 +61,57 @@ jobs:
             - name: Create Deployment Artifact (Compress files)
               # Create a tarball containing only necessary files/folders
               run: |
-                tar -czvf homeview-backend-artifact.tar.gz \
-                --exclude=.git \
-                dist package.json package-lock.json node_modules
+                  tar -czvf homeview-backend-artifact.tar.gz \
+                  --exclude=.git \
+                  --exclude=dist \
+                  --exclude=jest.config.ts \
+                  --exclude=tsconfig.json \
+                  --exclude=coverage \
+                  .
 
             - name: Copy Artifact to VPS via SCP
               uses: appleboy/scp-action@v0.1.7
               with:
-                host: ${{ secrets.SERVITRO_HOST }}
-                username: ${{ secrets.SERVITRO_USERNAME }}
-                key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
-                source: "homeview-backend-artifact.tar.gz"
-                # Transfer the file to a temporary location on the VPS
-                target: "/tmp" 
+                  host: ${{ secrets.SERVITRO_HOST }}
+                  username: ${{ secrets.SERVITRO_USERNAME }}
+                  key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+                  source: 'homeview-backend-artifact.tar.gz'
+                  # Transfer the file to a temporary location on the VPS
+                  target: '/tmp'
 
             - name: (debug) Upload artifact to check contents
               uses: actions/upload-artifact@v4
               with:
                   name: homeview-backend-artifact
-                  path: "homeview-backend-artifact.tar.gz"
+                  path: 'homeview-backend-artifact.tar.gz'
 
             - name: Deploy and Reload via SSH
               uses: appleboy/ssh-action@v1.0.3
               with:
-                host: ${{ secrets.SERVITRO_HOST }}
-                username: ${{ secrets.SERVITRO_USERNAME }}
-                key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
-                script: |
-                  APP_DIR="/var/www/homeview-backend"
-                  ARTIFACT="/tmp/homeview-backend-artifact.tar.gz"
-                  
-                  # 1. Navigate to the application directory
-                  cd $APP_DIR
-                  
-                  # 2. Extract the new files, overwriting the old ones
-                  # The --strip-components=1 flag is often used if the tarball was made from a subdirectory
-                  tar -xzvf $ARTIFACT
-                  
-                  # 3. Clean up the temporary artifact file
-                  rm $ARTIFACT
+                  host: ${{ secrets.SERVITRO_HOST }}
+                  username: ${{ secrets.SERVITRO_USERNAME }}
+                  key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+                  script: |
+                      APP_DIR="/var/www/homeview-backend"
+                      ARTIFACT="/tmp/homeview-backend-artifact.tar.gz"
 
-                  # 4. npm clean install again
-                  npm ci # --production
-                  
-                  # 5. Zero-Downtime PM2 Reload
-                  # Reloads the process using the newly extracted files
-                  pm2 reload ecosystem.config.js
+                      # 1. Navigate to the application directory
+                      cd $APP_DIR
 
-            - name: Deploy database migrations if everything else worked well
-              if: success()
-              env:
-                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              run: npx prisma migrate deploy
+                      # 2. Extract the new files, overwriting the old ones
+                      # The --strip-components=1 flag is often used if the tarball was made from a subdirectory
+                      tar -xzvf $ARTIFACT
+
+                      # 3. Clean up the temporary artifact file
+                      rm $ARTIFACT
+
+                      # 4. npm clean install again
+                      npm ci # --production
+                      npx prisma generate
+
+                      # 5. migrate prisma changes
+                      npx prisma migrate deploy
+
+                      # 6. Zero-Downtime PM2 Reload
+                      # Reloads the process using the newly extracted files
+                      pm2 reload ecosystem.config.js
