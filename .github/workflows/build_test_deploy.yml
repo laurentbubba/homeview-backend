@@ -1,0 +1,110 @@
+name: Build and deploy App to Servitro VPS - homeview-backend
+
+on:
+    # for now only on workflow dispatch
+    # push:
+    #     branches:
+    #         - main
+    workflow_dispatch:
+
+jobs:
+    build_and_deploy:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read #This is required for actions/checkout
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Node.js version
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '22.x'
+
+            - name: Clean Install (has postinstall prisma generate)
+              run: npm ci # --prefer-offline --no-audit
+
+            - name: Build App
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: npm run build
+
+            - name: Tests
+              run: npm run test --if-present
+
+            - name: Deploy database migrations
+              if: success()
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: npx prisma migrate deploy
+
+            # - name: List artifact contents (debug)
+            #   run: ls -R ./dist
+
+            # - name: Upload artifact for deployment job
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       name: homeview-backend-artifact
+            #       path: .
+
+            # - name: Prepare deployment package
+            #   run: |
+            #       # Remove unnecessary files for deployment
+            #       rm -rf .git .github .vscode node_modules .next
+            #       # Keep only essential files for Azure deployment
+            #       mkdir -p deploy
+            #       cp -r build public src package.json package-lock.json deploy/
+            #       cp -r prisma deploy/ # Keep Prisma schema for runtime
+
+            # - name: Upload optimized artifact
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       name: homeview-backend-artifact
+            #       path: deploy/
+            #       if-no-files-found: error
+
+            - name: Create Deployment Artifact (Compress files)
+              # Create a tarball containing only necessary files/folders
+              run: |
+                tar -czvf homeview-backend-artifact.tar.gz \
+                --exclude=.git \
+                --exclude=node_modules \
+                --exclude=src \
+                dist package.json package-lock.json
+
+            - name: Copy Artifact to VPS via SCP
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                host: ${{ secrets.SERVITRO_HOST }}
+                username: ${{ secrets.SERVITRO_USERNAME }}
+                key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+                source: "homeview-backend-artifact.tar.gz"
+                # Transfer the file to a temporary location on the VPS
+                target: "/tmp" 
+
+            - name: Deploy and Reload via SSH
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                host: ${{ secrets.SERVITRO_HOST }}
+                username: ${{ secrets.SERVITRO_USERNAME }}
+                key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+                script: |
+                  APP_DIR="/var/www/homeview-backend"
+                  ARTIFACT="/tmp/homeview-backend-artifact.tar.gz"
+                  
+                  # 1. Navigate to the application directory
+                  cd $APP_DIR
+                  
+                  # 2. Extract the new files, overwriting the old ones
+                  # The --strip-components=1 flag is often used if the tarball was made from a subdirectory
+                  tar -xzvf $ARTIFACT
+                  
+                  # 3. Clean up the temporary artifact file
+                  rm $ARTIFACT
+
+                  # 4. npm clean install again
+                  npm ci # --production
+                  
+                  # 5. Zero-Downtime PM2 Reload
+                  # Reloads the process using the newly extracted files
+                  pm2 reload ecosystem.config.js

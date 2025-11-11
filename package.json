@@ -10,7 +10,8 @@
     "test": "jest --passWithNoTests",
     "dev": "nodemon -L app.ts --delay 3",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "postinstall": "npx prisma generate"
   },
   "nodemonConfig": {
     "ext": "ts",
