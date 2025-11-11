@@ -33,31 +33,6 @@ jobs:
             - name: Tests
               run: npm run test --if-present
 
-            # - name: (debug) List build contents
-            #   run: ls -R .
-
-            # - name: Upload artifact for deployment job
-            #   uses: actions/upload-artifact@v4
-            #   with:
-            #       name: homeview-backend-artifact
-            #       path: .
-
-            # - name: Prepare deployment package
-            #   run: |
-            #       # Remove unnecessary files for deployment
-            #       rm -rf .git .github .vscode node_modules .next
-            #       # Keep only essential files for Azure deployment
-            #       mkdir -p deploy
-            #       cp -r build public src package.json package-lock.json deploy/
-            #       cp -r prisma deploy/ # Keep Prisma schema for runtime
-
-            # - name: Upload optimized artifact
-            #   uses: actions/upload-artifact@v4
-            #   with:
-            #       name: homeview-backend-artifact
-            #       path: deploy/
-            #       if-no-files-found: error
-
             - name: Create Deployment Artifact (Compress files)
               # Create a tarball containing only necessary files/folders
               run: |
