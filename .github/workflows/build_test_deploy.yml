@@ -1,9 +1,9 @@
 name: Build and deploy App to Servitro VPS - homeview-backend
 
 on:
-    # push:
-    #     branches:
-    #         - main
+    push:
+        branches:
+            - main
     workflow_dispatch:
 
 jobs:
