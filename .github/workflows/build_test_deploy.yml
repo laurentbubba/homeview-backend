@@ -81,4 +81,4 @@ jobs:
 
                       # 5. Zero-Downtime PM2 Reload
                       # Reloads the process using the newly extracted files
-                      pm2 reload ecosystem.config.js --update-env
+                      pm2 reload ../homeview-backend-config/ecosystem.config.js --update-env
