@@ -1,4 +1,4 @@
-name: Build and deploy App to Servitro VPS - homeview-backend
+name: Experimental
 
 on:
     # push:

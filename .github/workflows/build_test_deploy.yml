@@ -37,6 +37,7 @@ jobs:
               # Create a tarball containing only necessary files/folders
               run: |
                   tar -czvf homeview-backend-artifact.tar.gz \
+                  --ignore-failed-read \
                   --exclude='./.git' \
                   --exclude='./dist' \
                   --exclude='./jest.config.ts' \
