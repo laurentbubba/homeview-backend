@@ -13,7 +13,7 @@
 
     "clean": "rimraf dist/",
     "prisma-gen": "npx prisma generate",
-    "copy-files": "copyfiles -u 0 generated/**/*",
+    "copy-files": "copyfiles -u 0 generated",
     "build": "npm run clean && npm run prisma-gen && tsc && npm run copy-files"
   },
   "nodemonConfig": {
