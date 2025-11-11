@@ -1,9 +1,9 @@
 name: Build and deploy App to Servitro VPS - homeview-backend
 
 on:
-    push:
-        branches:
-            - main
+    # push:
+    #     branches:
+    #         - main
     workflow_dispatch:
 
 jobs:
@@ -31,14 +31,8 @@ jobs:
             - name: Tests
               run: npm run test --if-present
 
-            - name: Deploy database migrations
-              if: success()
-              env:
-                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              run: npx prisma migrate deploy
-
-            # - name: List artifact contents (debug)
-            #   run: ls -R ./dist
+            - name: (debug) List build contents
+              run: ls -R .
 
             # - name: Upload artifact for deployment job
             #   uses: actions/upload-artifact@v4
@@ -67,9 +61,7 @@ jobs:
               run: |
                 tar -czvf homeview-backend-artifact.tar.gz \
                 --exclude=.git \
-                --exclude=node_modules \
-                --exclude=src \
-                dist package.json package-lock.json
+                dist package.json package-lock.json node_modules
 
             - name: Copy Artifact to VPS via SCP
               uses: appleboy/scp-action@v0.1.7
@@ -80,6 +72,12 @@ jobs:
                 source: "homeview-backend-artifact.tar.gz"
                 # Transfer the file to a temporary location on the VPS
                 target: "/tmp" 
+
+            - name: (debug) Upload artifact to check contents
+              uses: actions/upload-artifact@v4
+              with:
+                  name: homeview-backend-artifact
+                  path: "homeview-backend-artifact.tar.gz"
 
             - name: Deploy and Reload via SSH
               uses: appleboy/ssh-action@v1.0.3
@@ -107,3 +105,9 @@ jobs:
                   # 5. Zero-Downtime PM2 Reload
                   # Reloads the process using the newly extracted files
                   pm2 reload ecosystem.config.js
+
+            - name: Deploy database migrations if everything else worked well
+              if: success()
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: npx prisma migrate deploy

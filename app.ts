@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use('/tasks', taskRouter);
 
 app.get('/status', (req, res) => {
-    res.json({ message: 'Back-end is running... AND CICD IS A BALLERRRRR' });
+    res.json({ message: 'Back-end is running...' });
 });
 
 app.listen(port, () => {
