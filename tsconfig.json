@@ -50,5 +50,15 @@
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-  }
+    "allowJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "../dist/generated/prisma": ["./generated/prisma/index.js"] 
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist/generated" 
+  ]
 }

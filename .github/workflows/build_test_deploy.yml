@@ -23,9 +23,6 @@ jobs:
             - name: Clean Install
               run: npm ci # --prefer-offline --no-audit
 
-            - name: Generate Prisma schema
-              run: npx prisma generate
-
             - name: Build App
               env:
                   DATABASE_URL: ${{ secrets.DATABASE_URL }}
