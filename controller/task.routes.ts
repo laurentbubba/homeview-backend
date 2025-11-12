@@ -113,4 +113,36 @@ taskRouter.post('/create', async (req: Request, res: Response, next: NextFunctio
     }
 });
 
+/**
+ * @swagger
+ * /tasks/finish/{taskId}:
+ *  put:
+ *      security:
+ *         - bearerAuth: []
+ *      summary: Finish a Task
+ *      parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The Task ID
+ *      responses:
+ *          200:
+ *              description: The updated Task object.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/TaskResponse'
+ */
+taskRouter.put('/finish/:taskId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const taskId = Number(req.params.taskId);
+        const taskResponse = await taskService.finishTask(taskId);
+        res.status(200).json(taskResponse);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export { taskRouter };
