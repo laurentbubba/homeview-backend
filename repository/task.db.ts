@@ -13,6 +13,23 @@ const getAllTasks = async (): Promise<Task[]> => {
     }
 };
 
+const createTask = async ({
+    name,
+    description,
+    isFinished,
+}: Task): Promise<Task> => {
+    try {
+        const taskPrisma = await database.task.create({
+            data: { name, description, isFinished },
+        });
+        return Task.from(taskPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 export default {
     getAllTasks,
+    createTask,
 };

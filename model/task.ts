@@ -1,10 +1,10 @@
 import { Task as TaskPrisma } from '../generated/prisma';
 
 export class Task {
-    private id?: number;
-    private name: string;
-    private description: string;
-    private isFinished: boolean;
+    readonly id?: number;
+    readonly name: string;
+    readonly description: string;
+    readonly isFinished: boolean;
     // TODO: priority
     // TODO: is of a category (which is new class)
 
@@ -48,7 +48,7 @@ export class Task {
         return new Task({
             id,
             name,
-            description,
+            description: description ?? '',
             isFinished
         });
     }

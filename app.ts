@@ -19,6 +19,19 @@ app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });
 
+const swaggerOpts = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Homeview-backend',
+            version: '0.0.1',
+        },
+    },
+    apis: ['./controller/*.routes.ts'],
+};
+const swaggerSpec = swaggerJSDoc(swaggerOpts);
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.listen(port, () => {
     console.log(`Back-end is running on port ${port}.`);
 });

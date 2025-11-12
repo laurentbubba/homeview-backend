@@ -22,9 +22,37 @@
  *            isFinished:
  *              type: boolean
  *              description: Whether task is finished.
+ *      TaskResponse:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: number
+ *              format: int64
+ *            name:
+ *              type: string
+ *              description: Task name.
+ *            description:
+ *              type: string
+ *              description: Task description.
+ *            isFinished:
+ *              type: boolean
+ *              description: Whether task is finished.
+ *      TaskRequest:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *              description: Task name.
+ *            description:
+ *              type: string
+ *              description: Task description.
+ *            isFinished:
+ *              type: boolean
+ *              description: Whether task is finished.
  */
 import express, { NextFunction, Request, Response } from 'express';
 import taskService from '../service/task.service'; // TODO: make this a relative path in tsconfig
+import { TaskInput } from '../types/index';
 
 const taskRouter = express.Router();
 
@@ -54,35 +82,35 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-// /**
-//  * @swagger
-//  * /lecturers/{id}:
-//  *  get:
-//  *      security:
-//  *         - bearerAuth: []
-//  *      summary: Get a lecturer by id.
-//  *      parameters:
-//  *          - in: path
-//  *            name: id
-//  *            schema:
-//  *              type: integer
-//  *              required: true
-//  *              description: The lecturer id.
-//  *      responses:
-//  *          200:
-//  *              description: A lecturer object.
-//  *              content:
-//  *                  application/json:
-//  *                      schema:
-//  *                          $ref: '#/components/schemas/Lecturer'
-//  */
-// lecturerRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//         const lecturer = await lecturerService.getLecturerById(Number(req.params.id));
-//         res.status(200).json(lecturer);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
+/**
+ * @swagger
+ * /tasks/create:
+ *  post:
+ *      security:
+ *         - bearerAuth: []
+ *      summary: Create a Task
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/TaskRequest'
+ *      responses:
+ *          200:
+ *              description: The created Task object.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/TaskResponse'
+ */
+taskRouter.post('/create', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const taskInput = <TaskInput>req.body;
+        const taskResponse = await taskService.createTask(taskInput);
+        res.status(200).json(taskResponse);
+    } catch (error) {
+        next(error);
+    }
+});
 
 export { taskRouter };

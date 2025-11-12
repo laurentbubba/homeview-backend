@@ -14,8 +14,8 @@ model Task {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   name        String
-  description String
-  isFinished  Boolean
+  description String?
+  isFinished  Boolean  @default(false)
 }
 
 // model Lecturer {
