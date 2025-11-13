@@ -3,7 +3,7 @@ import { Category } from "model/category";
 type TaskInput = {
     name: string;
     description: string;
-    categoryId: number;
+    categoryName: string;
     isFinished: boolean;
 };
 

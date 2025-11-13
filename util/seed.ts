@@ -1,5 +1,6 @@
 // Execute: npx ts-node util/seed.ts
 
+import { Category } from '../model/category';
 import { PrismaClient } from '../generated/prisma';
 // import bcrypt from 'bcrypt';
 // import { set } from 'date-fns';
@@ -8,20 +9,33 @@ const prisma = new PrismaClient();
 
 const main = async () => {
     await prisma.task.deleteMany();
+    await prisma.category.deleteMany();
 
     const houseChores = await prisma.category.create({
         data: {
-            id: 1,
             name: 'House Chores',
             description: 'Everything that needs to be done in the house, short and longterm',
         },
     });
+    
+    const houseChoresObject = await prisma.category.findUnique({
+        where: { name: 'House Chores' },
+    });
+
+    houseChoresObject ? Category.from(houseChoresObject) : null;
+
+    const houseChoresObjectId = houseChoresObject?.id
+
+    if (!houseChoresObjectId) {
+        console.error("Category 'House Chores' not found. Cannot create task.");
+        return;
+    }
 
     const cleanDishes = await prisma.task.create({
         data: {
             name: 'Clean the dishes',
             description: 'Clean the pans, the pots and other kitchenware.',
-            categoryId: 1,
+            categoryId: houseChoresObjectId,
             isFinished: false
         },
     });
@@ -30,7 +44,7 @@ const main = async () => {
         data: {
             name: 'Sweep the floor',
             description: 'First sweep the floor with the broom and then vacuum for perfection.',
-            categoryId: 1,
+            categoryId: houseChoresObjectId,
             isFinished: false
         },
     });
@@ -39,7 +53,7 @@ const main = async () => {
         data: {
             name: 'Brush my teeth',
             description: 'Brush teeth real cleaaaaaaaaaaannn.',
-            categoryId: 1,
+            categoryId: houseChoresObjectId,
             isFinished: false
         },
     });

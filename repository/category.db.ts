@@ -38,8 +38,20 @@ const getCategoryById = async (id: number): Promise<Category | null> => {
     }
 };
 
+const getCategoryByName = async (name: string): Promise<Category | null> => {
+    try {
+        const categoryPrisma = await database.category.findUnique({
+            where: { name: name },
+        });
+        return categoryPrisma ? Category.from(categoryPrisma) : null;
+    } catch (error) {
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 export default {
     getAllCategories,
     createCategory,
     getCategoryById,
+    getCategoryByName,
 };

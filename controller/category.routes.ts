@@ -72,3 +72,36 @@ categoryRouter.get('/', async (req: Request, res: Response, next: NextFunction) 
         next(error);
     }
 });
+
+/**
+ * @swagger
+ * /categories/create:
+ *  post:
+ *      security:
+ *         - bearerAuth: []
+ *      summary: Create a Category
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/CategoryRequest'
+ *      responses:
+ *          200:
+ *              description: The created Category object.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/CategoryResponse'
+ */
+categoryRouter.post('/create', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const categoryInput = <CategoryInput>req.body;
+        const categoryResponse = await categoryService.createCategory(categoryInput);
+        res.status(200).json(categoryResponse);
+    } catch (error) {
+        next(error);
+    }
+});
+
+export { categoryRouter };

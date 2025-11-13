@@ -8,13 +8,13 @@ const getAllTasks = async (): Promise<Task[]> => taskDb.getAllTasks();
 const createTask = async ({
     name,
     description,
-    categoryId,
+    categoryName,
     isFinished,
 }: TaskInput): Promise<Task> => {
     
-    const category = await categoryDb.getCategoryById(categoryId);
+    const category = await categoryDb.getCategoryByName(categoryName);
     if (!category) {
-        throw new Error(`Category with id ${categoryId} does not exist.`);
+        throw new Error(`Category with name ${categoryName} does not exist.`);
     }
 
     const task = new Task({ name, description, category, isFinished });
