@@ -9,10 +9,19 @@ const prisma = new PrismaClient();
 const main = async () => {
     await prisma.task.deleteMany();
 
+    const houseChores = await prisma.category.create({
+        data: {
+            id: 1,
+            name: 'House Chores',
+            description: 'Everything that needs to be done in the house, short and longterm',
+        },
+    });
+
     const cleanDishes = await prisma.task.create({
         data: {
             name: 'Clean the dishes',
             description: 'Clean the pans, the pots and other kitchenware.',
+            categoryId: 1,
             isFinished: false
         },
     });
@@ -21,6 +30,7 @@ const main = async () => {
         data: {
             name: 'Sweep the floor',
             description: 'First sweep the floor with the broom and then vacuum for perfection.',
+            categoryId: 1,
             isFinished: false
         },
     });
@@ -29,6 +39,7 @@ const main = async () => {
         data: {
             name: 'Brush my teeth',
             description: 'Brush teeth real cleaaaaaaaaaaannn.',
+            categoryId: 1,
             isFinished: false
         },
     });

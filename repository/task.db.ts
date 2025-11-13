@@ -7,6 +7,7 @@ const getAllTasks = async (): Promise<Task[]> => {
             orderBy: {
                 isFinished: 'asc', 
             },
+            include: { category: true }
         });
         return tasksPrisma.map((taskPrisma: any) => Task.from(taskPrisma));
     } catch (error) {
@@ -18,11 +19,22 @@ const getAllTasks = async (): Promise<Task[]> => {
 const createTask = async ({
     name,
     description,
+    category,
     isFinished,
 }: Task): Promise<Task> => {
     try {
         const taskPrisma = await database.task.create({
-            data: { name, description, isFinished },
+            data: { 
+                name, 
+                description, 
+                category: {
+                    connect: {
+                        id: category.id,
+                    },
+                }
+                ,isFinished 
+            },
+            include: { category: true }
         });
         return Task.from(taskPrisma);
     } catch (error) {
@@ -35,6 +47,7 @@ const getTaskById = async (id: number): Promise<Task | null> => {
     try {
         const taskPrisma = await database.task.findUnique({
             where: { id },
+            include: { category: true }
         });
         return taskPrisma ? Task.from(taskPrisma) : null;
     } catch (error) {
@@ -47,6 +60,7 @@ const finishTaskById = async (taskId: number): Promise<Task | null> => {
         const taskPrisma = await database.task.update({
             where: {id: taskId},
             data: {isFinished: true},
+            include: { category: true }
         });
         return taskPrisma ? Task.from(taskPrisma) : null;
     } catch (error) {

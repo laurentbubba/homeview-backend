@@ -10,12 +10,21 @@ datasource db {
 }
 
 model Task {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  description   String?
+  categoryId    Int
+  category      Category @relation(fields: [categoryId], references: [id])
+  isFinished    Boolean  @default(false)
+}
+
+model Category {
   id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
+  name        String   @unique
   description String?
-  isFinished  Boolean  @default(false)
+  tasks       Task[]
 }
 
 // model Lecturer {
