@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -33,6 +33,14 @@ const swaggerOpts = {
 };
 const swaggerSpec = swaggerJSDoc(swaggerOpts);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ status: 'unauthorized', message: err.message });
+    } else {
+        res.status(400).json({ status: 'application error', message: err.message });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Back-end is running on port ${port}.`);

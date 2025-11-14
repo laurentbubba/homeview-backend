@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch TS-Node (Debug)",
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register" // This tells Node to register ts-node, allowing it to execute .ts files
+            ],
+            "args": [
+                "${workspaceFolder}/app.ts" // The entry point file to run
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal", // Use the integrated terminal for console output
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}

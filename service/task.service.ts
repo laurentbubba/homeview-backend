@@ -5,6 +5,8 @@ import categoryDb from '../repository/category.db';
 
 const getAllTasks = async (): Promise<Task[]> => taskDb.getAllTasks();
 
+const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<Task[]> => taskDb.getUnfinishedTasksByCategoryName(categoryName);
+
 const createTask = async ({
     name,
     description,
@@ -42,4 +44,5 @@ export default {
     getAllTasks,
     createTask,
     finishTask,
+    getUnfinishedTasksByCategoryName,
 };

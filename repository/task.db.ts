@@ -16,6 +16,27 @@ const getAllTasks = async (): Promise<Task[]> => {
     }
 };
 
+const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<Task[]> => {
+    try {
+        const tasksPrisma = await database.task.findMany({
+            where: {
+                category: {
+                    name: categoryName,
+                },
+                isFinished: false
+            },
+            include: { 
+                category: true
+            }
+        });
+        
+        return tasksPrisma.map((taskPrisma: any) => Task.from(taskPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 const createTask = async ({
     name,
     description,
@@ -51,6 +72,7 @@ const getTaskById = async (id: number): Promise<Task | null> => {
         });
         return taskPrisma ? Task.from(taskPrisma) : null;
     } catch (error) {
+        console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
@@ -64,6 +86,7 @@ const finishTaskById = async (taskId: number): Promise<Task | null> => {
         });
         return taskPrisma ? Task.from(taskPrisma) : null;
     } catch (error) {
+        console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
@@ -73,4 +96,5 @@ export default {
     createTask,
     getTaskById,
     finishTaskById,
+    getUnfinishedTasksByCategoryName,
 };

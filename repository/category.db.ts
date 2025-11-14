@@ -34,6 +34,7 @@ const getCategoryById = async (id: number): Promise<Category | null> => {
         });
         return categoryPrisma ? Category.from(categoryPrisma) : null;
     } catch (error) {
+        console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };
@@ -41,10 +42,11 @@ const getCategoryById = async (id: number): Promise<Category | null> => {
 const getCategoryByName = async (name: string): Promise<Category | null> => {
     try {
         const categoryPrisma = await database.category.findUnique({
-            where: { name: name },
+            where: { name },
         });
         return categoryPrisma ? Category.from(categoryPrisma) : null;
     } catch (error) {
+        console.error(error);
         throw new Error('Database error. See server log for details.');
     }
 };

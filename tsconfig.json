@@ -44,8 +44,8 @@
 
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es2016", "dom"],
-    "target": "es6",
+    "lib": ["es2022"],
+    "target": "es2022",
     "rootDir": "./",
     "outDir": "./dist",
     "strict": true,

@@ -84,6 +84,40 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @swagger
+ * /tasks/byCategory/{categoryName}:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get a list of all tasks of a certain category.
+ *     parameters:
+ *       - in: path
+ *         name: categoryName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Category name
+ *     responses:
+ *       200:
+ *         description: A list of tasks of a certain category.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                  $ref: '#/components/schemas/Task'
+ */
+taskRouter.get('/byCategory/:categoryName', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const categoryName = req.params.categoryName;
+        const tasks = await taskService.getUnfinishedTasksByCategoryName(categoryName);
+        res.status(200).json(tasks);
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * @swagger
  * /tasks/create:
  *  post:
  *      security:
