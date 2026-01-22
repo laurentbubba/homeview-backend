@@ -52,6 +52,7 @@
     "esModuleInterop": true,
     "allowJs": true,
     "baseUrl": "./",
+    "sourceMap": true,
     "paths": {
       "../dist/generated/prisma": ["./generated/prisma/index.js"] 
     }

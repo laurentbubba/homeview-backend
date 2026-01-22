@@ -108,7 +108,7 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 taskRouter.get('/byCategory/:categoryName', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const categoryName = req.params.categoryName;
+        const categoryName = req.params.categoryName as string;
         const tasks = await taskService.getUnfinishedTasksByCategoryName(categoryName);
         res.status(200).json(tasks);
     } catch (error) {

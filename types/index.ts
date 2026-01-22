@@ -12,4 +12,22 @@ type CategoryInput = {
     description: string;
 };
 
-export { TaskInput, CategoryInput };
+type RecipeInput = {
+    name: string;
+    typeString: string;
+    cookingDescription: string;
+    ingredients: IngredientInput[];
+};
+
+type RecipeTypeInput = {
+    name: string;
+    description: string;
+};
+
+type IngredientInput = {
+    name: string;
+    quantity: number;
+    unit: string;
+};
+
+export { TaskInput, CategoryInput, RecipeInput, IngredientInput, RecipeTypeInput };

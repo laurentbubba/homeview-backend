@@ -6,25 +6,64 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  schemas  = ["Tasks", "Meals"]
 }
 
 model Task {
-  id            Int      @id @default(autoincrement())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  name          String
-  description   String?
-  categoryId    Int
-  category      Category @relation(fields: [categoryId], references: [id])
-  isFinished    Boolean  @default(false)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  isFinished  Boolean  @default(false)
+
+  @@schema("Tasks")
 }
 
 model Category {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  tasks       Task[]
+
+  @@schema("Tasks")
+}
+
+model Recipe {
+  id                 Int          @id @default(autoincrement())
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  name               String
+  typeId             Int
+  type               RecipeType   @relation(fields: [typeId], references: [id])
+  cookingDescription String
+  ingredients        Ingredient[]
+
+  @@schema("Meals")
+}
+
+model RecipeType {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   description String?
-  tasks       Task[]
+  recipes     Recipe[]
+
+  @@schema("Meals")
+}
+
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  quantity  Float
+  unit      String
+  recipeId  Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@schema("Meals")
 }
 
 // model Lecturer {

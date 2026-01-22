@@ -2,3 +2,5 @@
 .env
 /dist
 generated/
+Copilot_comments/
+coverage/
