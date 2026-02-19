@@ -18,20 +18,20 @@ const main = async () => {
     await prisma.ingredient.deleteMany();
 
     // ============ TASKS AND CATEGORIES ============
-    const houseChores = await prisma.category.create({
+    const house = await prisma.category.create({
         data: {
-            name: 'House Chores',
+            name: 'House',
             description: 'Everything that needs to be done in the house, short and longterm',
         },
     });
-    
-    const houseChoresObjectId = houseChores.id;
+
+    const houseObjectId = house.id;
 
     const cleanDishes = await prisma.task.create({
         data: {
             name: 'Clean the dishes',
             description: 'Clean the pans, the pots and other kitchenware.',
-            categoryId: houseChoresObjectId,
+            categoryId: houseObjectId,
             isFinished: false
         },
     });
@@ -40,7 +40,7 @@ const main = async () => {
         data: {
             name: 'Sweep the floor',
             description: 'First sweep the floor with the broom and then vacuum for perfection.',
-            categoryId: houseChoresObjectId,
+            categoryId: houseObjectId,
             isFinished: false
         },
     });
@@ -49,7 +49,7 @@ const main = async () => {
         data: {
             name: 'Brush my teeth',
             description: 'Brush teeth real cleaaaaaaaaaaannn.',
-            categoryId: houseChoresObjectId,
+            categoryId: houseObjectId,
             isFinished: false
         },
     });
@@ -58,7 +58,7 @@ const main = async () => {
         data: {
             name: 'Do laundry',
             description: 'Wash, dry, and fold all dirty clothes.',
-            categoryId: houseChoresObjectId,
+            categoryId: houseObjectId,
             isFinished: false
         },
     });
@@ -67,7 +67,7 @@ const main = async () => {
         data: {
             name: 'Vacuum the carpets',
             description: 'Vacuum all carpeted areas thoroughly.',
-            categoryId: houseChoresObjectId,
+            categoryId: houseObjectId,
             isFinished: false
         },
     });
