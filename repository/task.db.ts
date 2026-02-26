@@ -25,7 +25,7 @@ const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<T
                 },
                 isFinished: false
             },
-            include: { 
+            include: {
                 category: true
             }
         });

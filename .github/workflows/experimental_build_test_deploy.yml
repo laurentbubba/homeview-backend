@@ -1,0 +1,83 @@
+name: Build and deploy App - Multi-Env
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. SWAP SECRETS BASED ON BRANCH
+      - name: Set Environment Variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "DB_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+            echo "DEPLOY_TARGET=prod" >> $GITHUB_ENV
+          else
+            echo "DB_URL=${{ secrets.DEV_DATABASE_URL }}" >> $GITHUB_ENV
+            echo "DEPLOY_TARGET=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v4 # Updated to v4
+        with:
+          node-version: '22.x'
+
+      - name: Clean Install
+        run: npm ci
+
+      - name: Build App
+        env:
+          DATABASE_URL: ${{ env.DB_URL }}
+        run: npm run build
+
+      - name: Deploy database migrations
+        if: success()
+        env:
+          DATABASE_URL: ${{ env.DB_URL }}
+        run: npx prisma migrate deploy
+
+      # --- PROD ONLY: VPS DEPLOYMENT ---
+      - name: Create Deployment Artifact
+        if: env.DEPLOY_TARGET == 'prod'
+        run: |
+          tar -czvf homeview-backend-dist.tar.gz \
+          dist generated package.json package-lock.json
+
+      - name: Copy Artifact to VPS via SCP
+        if: env.DEPLOY_TARGET == 'prod'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVITRO_HOST }}
+          username: ${{ secrets.SERVITRO_USERNAME }}
+          key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+          source: 'homeview-backend-dist.tar.gz'
+          target: '/tmp'
+
+      - name: Deploy and Reload via SSH
+        if: env.DEPLOY_TARGET == 'prod'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVITRO_HOST }}
+          username: ${{ secrets.SERVITRO_USERNAME }}
+          key: ${{ secrets.SERVITRO_PRIVATE_KEY }}
+          script: |
+            APP_DIR="/var/www/homeview-backend"
+            ARTIFACT="/tmp/homeview-backend-dist.tar.gz"
+            cd $APP_DIR
+            tar -xzvf $ARTIFACT
+            rm $ARTIFACT
+            npm ci --omit=dev
+            pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
+
+      # --- DEV ONLY: FREE HOST DEPLOYMENT (Render) ---
+      - name: Deploy to Render Free Tier
+        if: env.DEPLOY_TARGET == 'dev'
+        run: |
+          curl -X GET "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
