@@ -37,11 +37,19 @@ jobs:
           DATABASE_URL: ${{ env.DB_URL }}
         run: npm run build
 
-      - name: Deploy database migrations
+      - name: Deploy database changes
         if: success()
+        run: |
+          if [[ "${{ env.DEPLOY_TARGET }}" == "prod" ]]; then
+            echo "Applying strict migrations to PROD..."
+            npx prisma migrate deploy
+          else
+            echo "Pushing schema changes to DEV..."
+            # Using more loose db push
+            npx prisma db push --accept-data-loss
+          fi
         env:
           DATABASE_URL: ${{ env.DB_URL }}
-        run: npx prisma migrate deploy
 
       # --- PROD ONLY: VPS DEPLOYMENT ---
       - name: Create Deployment Artifact
