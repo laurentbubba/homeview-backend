@@ -30,4 +30,28 @@ type IngredientInput = {
     unit: string;
 };
 
-export { TaskInput, CategoryInput, RecipeInput, IngredientInput, RecipeTypeInput };
+type UserInput = {
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+};
+
+type AuthenticationInput = {
+    username: string;
+    password: string;
+};
+
+type AuthenticationResponse = {
+    token: string;
+    user: {
+        id: number | undefined;
+        username: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+    }
+};
+
+export { TaskInput, CategoryInput, RecipeInput, IngredientInput, RecipeTypeInput, UserInput, AuthenticationInput, AuthenticationResponse };

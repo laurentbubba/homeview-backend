@@ -5,22 +5,39 @@ import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 import { taskRouter } from './controller/task.routes';
 import { categoryRouter } from './controller/category.routes';
 import { recipeRouter } from './controller/recipe.routes';
 import { recipeTypeRouter } from './controller/recipeType.routes';
+import { userRouter } from './controller/user.routes';
+import { authRouter } from './controller/auth.routes';
+import { authenticateToken } from './middleware/auth';
 
 const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 4000;
 
-app.use(cors());
+// to be able to work with cookies
+app.use(cookieParser());
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(bodyParser.json());
 
-app.use('/tasks', taskRouter);
-app.use('/categories', categoryRouter);
-app.use('/recipes', recipeRouter);
-app.use('/recipeTypes', recipeTypeRouter);
+app.use('/auth', authRouter);
+
+// PROTECTED
+app.use('/tasks', authenticateToken, taskRouter);
+app.use('/categories', authenticateToken, categoryRouter);
+app.use('/recipes', authenticateToken, recipeRouter);
+app.use('/recipeTypes', authenticateToken, recipeTypeRouter);
+app.use('/users', authenticateToken, userRouter);
 
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
@@ -42,12 +59,15 @@ app.use('/swagger', swaggerUi.serve, (req: Request, res: Response, next: NextFun
     swaggerUi.setup(freshSpec)(req, res, next);
 });
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401).json({ status: 'unauthorized', message: err.message });
-    } else {
-        res.status(400).json({ status: 'application error', message: err.message });
-    }
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error("Error detected:", err.message);
+
+    const status = err.status || 500;
+    
+    res.status(status).json({
+        status: 'error',
+        message: err.message || 'Internal Server Error',
+    });
 });
 
 app.listen(port, () => {
