@@ -22,7 +22,9 @@ const port = process.env.APP_PORT || 4000;
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 
+    'https://homeview-frontend-fenc58nvx-laurent-bubbas-projects-aa8eefd9.vercel.app', 
+    'https://homeview-frontend.vercel.app/'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
