@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["Tasks", "Meals"]
+  schemas  = ["Tasks", "Recipes", "Users"]
 }
 
 model Task {
@@ -17,6 +17,7 @@ model Task {
   description String?
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
+  priority    Int      @default(3)
   isFinished  Boolean  @default(false)
 
   @@schema("Tasks")
@@ -41,7 +42,7 @@ model Recipe {
   cookingDescription String
   ingredients        Ingredient[]
 
-  @@schema("Meals")
+  @@schema("Recipes")
 }
 
 model RecipeType {
@@ -50,7 +51,7 @@ model RecipeType {
   description String?
   recipes     Recipe[]
 
-  @@schema("Meals")
+  @@schema("Recipes")
 }
 
 model Ingredient {
@@ -63,53 +64,17 @@ model Ingredient {
   recipeId  Int
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
-  @@schema("Meals")
+  @@schema("Recipes")
 }
 
-// model Lecturer {
-//   id        Int        @id @default(autoincrement())
-//   createdAt DateTime   @default(now())
-//   updatedAt DateTime   @updatedAt
-//   expertise String
-//   userId    Int        @unique
-//   user      User       @relation(fields: [userId], references: [id])
-//   courses   Course[]
-//   schedules Schedule[]
-// }
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  // role      String // Will be added later
 
-// model Course {
-//   id          Int        @id @default(autoincrement())
-//   createdAt   DateTime   @default(now())
-//   updatedAt   DateTime   @updatedAt
-//   name        String
-//   description String
-//   phase       Int
-//   credits     Int
-//   schedules   Schedule[]
-//   Lecturers   Lecturer[]
-// }
-
-// model Schedule {
-//   id         Int       @id @default(autoincrement())
-//   createdAt  DateTime  @default(now())
-//   updatedAt  DateTime  @updatedAt
-//   start      DateTime
-//   end        DateTime
-//   course     Course    @relation(fields: [courseId], references: [id])
-//   courseId   Int
-//   lecturer   Lecturer  @relation(fields: [lecturerId], references: [id])
-//   lecturerId Int
-//   students   Student[]
-// }
-
-// model User {
-//   id        Int       @id @default(autoincrement())
-//   username  String    @unique
-//   firstName String
-//   lastName  String
-//   email     String    @unique
-//   password  String
-//   role      String
-//   lecturer  Lecturer?
-//   student   Student?
-// }
+  @@schema("Users")
+}
