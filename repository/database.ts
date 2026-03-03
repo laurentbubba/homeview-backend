@@ -8,6 +8,14 @@ const pool = new pg.Pool({
 
 const adapter = new PrismaPg(pool);
 
-const database = new PrismaClient({ adapter });
+const database = new PrismaClient({ 
+  adapter,
+  log: [
+    {
+      emit: 'event',
+      level: 'query',
+    },
+  ],
+ });
 
 export default database;
