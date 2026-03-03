@@ -81,7 +81,7 @@ jobs:
             cd $APP_DIR
             tar -xzvf $ARTIFACT
             rm $ARTIFACT package-lock.json
-            npm install --production
+            npm install
             pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
 
       # --- DEV ONLY: FREE HOST DEPLOYMENT (Render) ---
