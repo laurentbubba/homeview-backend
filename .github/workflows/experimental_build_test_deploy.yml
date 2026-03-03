@@ -80,7 +80,7 @@ jobs:
             ARTIFACT="/tmp/homeview-backend-dist.tar.gz"
             cd $APP_DIR
             tar -xzvf $ARTIFACT
-            rm $ARTIFACT package-lock.json
+            rm $ARTIFACT package-lock.json node_modules -rf
             npm install
             pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
 
