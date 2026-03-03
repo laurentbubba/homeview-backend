@@ -1,4 +1,4 @@
-name: Build and deploy App - Multi-Env
+name: Build and deploy App
 
 on:
   push:
@@ -56,7 +56,7 @@ jobs:
         if: env.DEPLOY_TARGET == 'prod'
         run: |
           tar -czvf homeview-backend-dist.tar.gz \
-          dist generated package.json package-lock.json
+          dist generated package.json
 
       - name: Copy Artifact to VPS via SCP
         if: env.DEPLOY_TARGET == 'prod'
@@ -80,8 +80,8 @@ jobs:
             ARTIFACT="/tmp/homeview-backend-dist.tar.gz"
             cd $APP_DIR
             tar -xzvf $ARTIFACT
-            rm $ARTIFACT package.json package-lock.json
-            npm install
+            rm $ARTIFACT package-lock.json
+            npm install --production
             pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
 
       # --- DEV ONLY: FREE HOST DEPLOYMENT (Render) ---
