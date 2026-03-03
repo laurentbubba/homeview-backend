@@ -109,8 +109,8 @@ authRouter.post('/login', async (req: Request, res: Response, next: NextFunction
 
         res.cookie('token', token, {
             httpOnly: true, // Prevents JS access (Security!)
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'none',
             maxAge: 8 * 60 * 60 * 1000, // 8 hours
         });
 
@@ -135,10 +135,8 @@ authRouter.post('/logout', async (req: Request, res: Response, next: NextFunctio
 
         res.clearCookie('token', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            // IMPORTANT: sameSite must match what you used during login
-            // If you use different domains (Vercel -> Backend), use 'none'
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'none',
             path: '/', 
         });
 
