@@ -79,7 +79,7 @@ jobs:
                       tar -xzvf $ARTIFACT
                       rm $ARTIFACT package-lock.json node_modules -rf
                       npm install
-                      npx prisma migrate deploy
+                      npx prisma migrate deploy --schema ./generated/prisma/schema.prisma
                       pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
 
             # --- DEV ONLY: FREE HOST DEPLOYMENT (Render) ---
