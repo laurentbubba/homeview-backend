@@ -40,13 +40,16 @@ jobs:
             - name: Deploy database changes
               if: success()
               run: |
-                  if [[ "${{ env.DEPLOY_TARGET }}" == "dev" ]]; then
-                    echo "Pushing schema changes to DEV..."
-                    # Using more loose db push
-                    npx prisma db push --accept-data-loss
-                  fi
+                if [[ "${{ env.DEPLOY_TARGET }}" == "prod" ]]; then
+                  echo "Applying strict migrations to PROD..."
+                  npx prisma migrate deploy
+                else
+                  echo "Pushing schema changes to DEV..."
+                  # Using more loose db push
+                  npx prisma db push --accept-data-loss
+                fi
               env:
-                  DATABASE_URL: ${{ env.DB_URL }}
+                DATABASE_URL: ${{ env.DB_URL }}
 
             # --- PROD ONLY: VPS DEPLOYMENT ---
             - name: Create Deployment Artifact
@@ -79,7 +82,6 @@ jobs:
                       tar -xzvf $ARTIFACT
                       rm $ARTIFACT package-lock.json node_modules -rf
                       npm install
-                      npx prisma migrate deploy --schema ./generated/prisma/schema.prisma
                       pm2 reload /var/www/homeview-backend-config/ecosystem.config.js --update-env
 
             # --- DEV ONLY: FREE HOST DEPLOYMENT (Render) ---
