@@ -28,6 +28,7 @@ model Category {
   name        String  @unique
   description String?
   tasks       Task[]
+  priority    Int     @default(3)
 
   @@schema("Tasks")
 }

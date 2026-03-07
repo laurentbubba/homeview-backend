@@ -8,9 +8,10 @@ const getAllCategories = async (): Promise<Category[]> => categoryDb.getAllCateg
 const createCategory = async ({
     name,
     description,
+    priority,
 }: CategoryInput): Promise<Category> => {
     
-    const category = new Category({ name, description});
+    const category = new Category({ name, description, priority});
  
     return await categoryDb.createCategory(category);
 }

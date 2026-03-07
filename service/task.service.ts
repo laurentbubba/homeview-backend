@@ -7,6 +7,8 @@ const getAllTasks = async (): Promise<Task[]> => taskDb.getAllTasks();
 
 const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<Task[]> => taskDb.getUnfinishedTasksByCategoryName(categoryName);
 
+const getUnfinishedTasksOnPriority = async (): Promise<Task[]> => taskDb.getUnfinishedTasksOnPriority();
+
 const createTask = async ({
     name,
     description,
@@ -50,5 +52,6 @@ export default {
     createTask,
     finishTask,
     getUnfinishedTasksByCategoryName,
+    getUnfinishedTasksOnPriority,
     changePriority,
 };

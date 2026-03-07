@@ -84,6 +84,34 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @swagger
+ * /tasks:
+ *   get:
+ *     security:
+ *       - cookieAuth: []
+ *     summary: Get a list of all tasks on priority.
+ *     responses:
+ *       200:
+ *         description: A list of tasks by priorities.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                  $ref: '#/components/schemas/Task'
+ */
+taskRouter.get('/onPriority', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const tasks = await taskService.getUnfinishedTasksOnPriority();
+        res.status(200).json(tasks);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+/**
+ * @swagger
  * /tasks/byCategory/{categoryName}:
  *   get:
  *     security:

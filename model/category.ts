@@ -4,15 +4,18 @@ export class Category {
     readonly id?: number;
     readonly name: string;
     readonly description: string;
+    readonly priority: number;
 
     constructor(category: {
         id?: number;
         name: string;
         description: string;
+        priority: number;
     }) {
         this.id = category.id;
         this.name = category.name;
         this.description = category.description;
+        this.priority = category.priority;
     }
 
     getId(): number | undefined {
@@ -34,11 +37,12 @@ export class Category {
         );
     }
 
-    static from({ id, name, description}: CategoryPrisma) {
+    static from({ id, name, description, priority }: CategoryPrisma) {
         return new Category({
             id,
             name,
-            description: description ?? ''
+            description: description ?? '',
+            priority,
         });
     }
 }

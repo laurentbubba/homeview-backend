@@ -29,12 +29,43 @@ const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<T
                 category: true
             },
             orderBy: [
-            {
-                priority: 'desc',
+                {
+                    priority: 'desc',
+                },
+                {
+                    createdAt: 'desc',
+                }
+    ]
+        });
+        
+        return tasksPrisma.map((taskPrisma: any) => Task.from(taskPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+const getUnfinishedTasksOnPriority = async (): Promise<Task[]> => {
+    try {
+        const tasksPrisma = await database.task.findMany({
+            where: {
+                isFinished: false
             },
-            {
-                id: 'asc',
-            }
+            include: {
+                category: true
+            },
+            orderBy: [
+                {
+                    category: {
+                        priority: 'desc',
+                    }
+                },
+                {
+                    priority: 'desc',
+                },
+                {
+                    createdAt: 'desc',
+                }
     ]
         });
         
@@ -115,6 +146,7 @@ const changePriorityById = async (taskId: number, priority: number): Promise<Tas
 
 export default {
     getAllTasks,
+    getUnfinishedTasksOnPriority,
     createTask,
     getTaskById,
     finishTaskById,

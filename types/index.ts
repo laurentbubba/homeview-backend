@@ -11,6 +11,7 @@ type TaskInput = {
 type CategoryInput = {
     name: string;
     description: string;
+    priority: number;
 };
 
 type RecipeInput = {
