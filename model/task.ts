@@ -8,6 +8,7 @@ export class Task {
     readonly description: string;
     readonly category: Category;
     readonly isFinished: boolean;
+    readonly priority: number;
 
     constructor(task: {
         id?: number;
@@ -15,6 +16,7 @@ export class Task {
         description: string;
         category: Category;
         isFinished: boolean;
+        priority: number;
     }) {
         this.validate(task)
         this.id = task.id;
@@ -22,6 +24,7 @@ export class Task {
         this.description = task.description;
         this.category = task.category;
         this.isFinished = task.isFinished;
+        this.priority = task.priority;
     }
 
     validate(task: {
@@ -56,22 +59,28 @@ export class Task {
         return this.isFinished;
     }
 
+    getPriority(): number {
+        return this.priority;
+    }
+
     equals(task: Task): boolean {
         return (
             this.name === task.getName() &&
             this.description === task.getDescription() &&
             this.category === task.getCategory() &&
-            this.isFinished === task.getIsFinished()
+            this.isFinished === task.getIsFinished() &&
+            this.priority === task.getPriority()
         );
     }
 
-    static from({ id, name, description, category, isFinished }: TaskPrisma & {category: CategoryPrisma}) {
+    static from({ id, name, description, category, isFinished, priority }: TaskPrisma & {category: CategoryPrisma}) {
         return new Task({
             id,
             name,
             description: description ?? '',
             category: Category.from(category),
-            isFinished
+            isFinished,
+            priority
         });
     }
 }

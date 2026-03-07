@@ -12,6 +12,7 @@ const createTask = async ({
     description,
     categoryName,
     isFinished,
+    priority
 }: TaskInput): Promise<Task> => {
     
     const category = await categoryDb.getCategoryByName(categoryName);
@@ -19,7 +20,7 @@ const createTask = async ({
         throw new Error(`Category with name ${categoryName} does not exist.`);
     }
 
-    const task = new Task({ name, description, category, isFinished });
+    const task = new Task({ name, description, category, isFinished, priority });
  
     return await taskDb.createTask(task);
 }
@@ -34,15 +35,20 @@ const finishTask = async (id: number): Promise<Task | null> => {
     return await taskDb.finishTaskById(id);
 }
 
-// const getTaskById = async (id: number): Promise<Task> => {
-//     const task = await taskDb.getTaskById({ id });
-//     if (!task) throw new Error(`Task with id ${id} does not exist.`);
-//     return task;
-// };
+const changePriority = async (id: number, priority: number): Promise<Task | null> => {
+    
+    const task = await taskDb.getTaskById(id);
+    if (!id) {
+        throw new Error(`Task with id ${id} does not exist.`);
+    }
+
+    return await taskDb.changePriorityById(id, priority);
+}
 
 export default {
     getAllTasks,
     createTask,
     finishTask,
     getUnfinishedTasksByCategoryName,
+    changePriority,
 };

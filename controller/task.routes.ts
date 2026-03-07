@@ -2,10 +2,10 @@
  * @swagger
  *   components:
  *    securitySchemes:
- *     bearerAuth:
- *      type: http
- *      scheme: bearer
- *      bearerFormat: JWT
+ *     cookieAuth:
+ *      type: apiKey
+ *      in: cookie
+ *      name: token
  *    schemas:
  *      Task:
  *          type: object
@@ -61,7 +61,7 @@ const taskRouter = express.Router();
  * /tasks:
  *   get:
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     summary: Get a list of all tasks.
  *     responses:
  *       200:
@@ -87,7 +87,7 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  * /tasks/byCategory/{categoryName}:
  *   get:
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     summary: Get a list of all tasks of a certain category.
  *     parameters:
  *       - in: path
@@ -121,7 +121,7 @@ taskRouter.get('/byCategory/:categoryName', async (req: Request, res: Response, 
  * /tasks/create:
  *  post:
  *      security:
- *         - bearerAuth: []
+ *         - cookieAuth: []
  *      summary: Create a Task
  *      requestBody:
  *        required: true
@@ -152,7 +152,7 @@ taskRouter.post('/create', async (req: Request, res: Response, next: NextFunctio
  * /tasks/finish/{taskId}:
  *  put:
  *      security:
- *         - bearerAuth: []
+ *         - cookieAuth: []
  *      summary: Finish a Task
  *      parameters:
  *       - in: path
@@ -178,5 +178,50 @@ taskRouter.put('/finish/:taskId', async (req: Request, res: Response, next: Next
         next(error);
     }
 });
+
+/**
+ * @swagger
+ * /tasks/changePriority/{taskId}:
+ *  put:
+ *      security:
+ *         - cookieAuth: []
+ *      summary: Change the priority of a Task
+ *      parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The Task ID
+ *      requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 priority:
+ *                   type: integer
+ *         description: The new priority for the task
+ *      responses:
+ *          200:
+ *              description: The updated Task object.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/TaskResponse'
+ */
+taskRouter.put('/updatePriority/:taskId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const taskId = Number(req.params.taskId);
+        const { priority } = req.body;
+        const taskResponse = await taskService.changePriority(taskId, priority);
+        res.status(200).json(taskResponse);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 
 export { taskRouter };

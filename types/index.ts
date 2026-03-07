@@ -5,6 +5,7 @@ type TaskInput = {
     description: string;
     categoryName: string;
     isFinished: boolean;
+    priority: number;
 };
 
 type CategoryInput = {
