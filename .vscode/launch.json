@@ -1,20 +1,27 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch TS-Node (Debug)",
-            "runtimeArgs": [
-                "-r",
-                "ts-node/register" // This tells Node to register ts-node, allowing it to execute .ts files
-            ],
-            "args": [
-                "${workspaceFolder}/app.ts" // The entry point file to run
-            ],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal", // Use the integrated terminal for console output
-            "internalConsoleOptions": "neverOpen"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Homeview",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": ["${workspaceFolder}/app.ts"],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+      ],
+      "env": {
+        "TS_NODE_TRANSPILE_ONLY": "true"
+      }
+    }
+  ]
 }

@@ -81,6 +81,7 @@ const createTask = async ({
     description,
     category,
     isFinished,
+    priority,
 }: Task): Promise<Task> => {
     try {
         const taskPrisma = await database.task.create({
@@ -92,7 +93,8 @@ const createTask = async ({
                         id: category.id,
                     },
                 }
-                ,isFinished 
+                ,isFinished
+                ,priority
             },
             include: { category: true }
         });
