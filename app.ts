@@ -13,6 +13,7 @@ import { recipeTypeRouter } from './controller/recipeType.routes';
 import { userRouter } from './controller/user.routes';
 import { authRouter } from './controller/auth.routes';
 import { authenticateToken } from './middleware/auth';
+import database from './repository/database';
 
 const app = express();
 dotenv.config();
@@ -27,8 +28,23 @@ app.use(cors({
     'https://homeview-frontend.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+
+  optionsSuccessStatus: 200,
+
+  maxAge: 86400,
 }));
+
+// Every 2 minutes, run a tiny query to keep the DB warm
+setInterval(async () => {
+  try {
+    // A 'SELECT 1' is the cheapest possible query in Postgres
+    await database.$queryRaw`SELECT 1`; 
+    console.log('Database heartbeat sent.');
+  } catch (err) {
+    console.error('Database heartbeat failed:', err);
+  }
+}, 120000);
 
 app.use(bodyParser.json());
 
