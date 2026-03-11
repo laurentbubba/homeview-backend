@@ -101,7 +101,7 @@ taskRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 taskRouter.get('/onPriority', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const tasks = await taskService.getUnfinishedTasksOnPriority();
+        const tasks = await taskService.getUnfinishedTasksOnSmartPriority();
         res.status(200).json(tasks);
     } catch (error) {
         next(error);

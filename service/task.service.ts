@@ -9,6 +9,28 @@ const getUnfinishedTasksByCategoryName = async (categoryName: string): Promise<T
 
 const getUnfinishedTasksOnPriority = async (): Promise<Task[]> => taskDb.getUnfinishedTasksOnPriority();
 
+const getUnfinishedTasksOnSmartPriority = async (): Promise<Task[]> => {
+    const tasks = await taskDb.getUnfinishedTasksRaw();
+
+    return tasks.sort((a, b) => {
+        const highPriocategories = a.category.priority >= 3 ? 1 : 0;
+        const lowPrioCategories = b.category.priority >= 3 ? 1 : 0;
+        
+        if (highPriocategories !== lowPrioCategories) return lowPrioCategories - highPriocategories;
+
+        const highPrioCategoryTaskIsCrit = a.priority === 5 ? 1 : 0;
+        const lowPrioCategoryTaskIsCrit = b.priority === 5 ? 1 : 0;
+
+        if (highPrioCategoryTaskIsCrit !== lowPrioCategoryTaskIsCrit) return lowPrioCategoryTaskIsCrit - highPrioCategoryTaskIsCrit;
+
+        if (a.category.priority !== b.category.priority) {
+            return b.category.priority - a.category.priority;
+        }
+
+        return b.priority - a.priority;
+    });
+};
+
 const createTask = async ({
     name,
     description,
@@ -53,5 +75,6 @@ export default {
     finishTask,
     getUnfinishedTasksByCategoryName,
     getUnfinishedTasksOnPriority,
+    getUnfinishedTasksOnSmartPriority,
     changePriority,
 };

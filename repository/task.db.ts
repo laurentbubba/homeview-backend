@@ -76,6 +76,20 @@ const getUnfinishedTasksOnPriority = async (): Promise<Task[]> => {
     }
 };
 
+const getUnfinishedTasksRaw = async (): Promise<Task[]> => {
+    try {
+        const tasksPrisma = await database.task.findMany({
+            where: { isFinished: false },
+            include: { category: true }
+        });
+        
+        return tasksPrisma.map((taskPrisma: any) => Task.from(taskPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 const createTask = async ({
     name,
     description,
@@ -153,5 +167,6 @@ export default {
     getTaskById,
     finishTaskById,
     getUnfinishedTasksByCategoryName,
+    getUnfinishedTasksRaw,
     changePriorityById,
 };

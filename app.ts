@@ -28,7 +28,7 @@ app.use(cors({
     'https://homeview-frontend.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type'],
 
   optionsSuccessStatus: 200,
 
@@ -36,15 +36,15 @@ app.use(cors({
 }));
 
 // Every 2 minutes, run a tiny query to keep the DB warm
-setInterval(async () => {
-  try {
-    // A 'SELECT 1' is the cheapest possible query in Postgres
-    await database.$queryRaw`SELECT 1`; 
-    console.log('Database heartbeat sent.');
-  } catch (err) {
-    console.error('Database heartbeat failed:', err);
-  }
-}, 120000);
+// setInterval(async () => {
+//   try {
+//     // A 'SELECT 1' is the cheapest possible query in Postgres
+//     await database.$queryRaw`SELECT 1`; 
+//     console.log('Database heartbeat sent.');
+//   } catch (err) {
+//     console.error('Database heartbeat failed:', err);
+//   }
+// }, 30000);
 
 app.use(bodyParser.json());
 
