@@ -9,45 +9,23 @@ const getAllRecipes = async (): Promise<Recipe[]> => recipeDb.getAllRecipes();
 
 const getRecipesByType = async (type: string): Promise<Recipe[]> => recipeDb.getRecipesByType(type);
 
-const createRecipe = async ({
-    name,
-    typeString,
-    cookingDescription,
-    ingredients,
-}: RecipeInput): Promise<Recipe> => {
-    
+const getRecipeById = async (id: number): Promise<Recipe | null> => recipeDb.getRecipeById(id);
+
+const createRecipe = async ( input: RecipeInput ): Promise<Recipe> => {
     const recipeType = await database.recipeType.findFirst({
-        where: { name: typeString }
+        where: { name: input.typeString }
     });
 
     if (!recipeType) {
-        throw new Error(`Recipe type "${typeString}" does not exist.`);
+        throw new Error(`Recipe type "${input.typeString}" does not exist.`);
     }
 
-    const createdPrismaRecipe = await database.recipe.create({
-        data: {
-            name,
-            cookingDescription,
-            type: { connect: { id: recipeType.id } },
-            ingredients: {
-                create: ingredients.map(ing => ({
-                    name: ing.name,
-                    quantity: ing.quantity,
-                    unit: ing.unit,
-                }))
-            }
-        },
-        include: {
-            ingredients: true,
-            type: true
-        }
-    });
-
-    return Recipe.from(createdPrismaRecipe);
+    return await recipeDb.createRecipe(input, recipeType.id);
 };
 
 export default {
     getAllRecipes,
     createRecipe,
     getRecipesByType,
+    getRecipeById,
 };

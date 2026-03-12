@@ -1,16 +1,25 @@
+import { RecipeInput } from 'types';
 import { Recipe } from '../model/recipe';
 import database from './database';
 
 const getAllRecipes = async (): Promise<Recipe[]> => {
     try {
-        const recipesPrisma = await database.recipe.findMany({
+const recipesPrisma = await database.recipe.findMany({
             orderBy: {
-                createdAt: 'desc',
+                name: 'desc',
             },
             include: { 
-                ingredients: true,
-                type: true
-             }
+                // Include the steps
+                steps: {
+                    orderBy: {
+                        order: 'asc' // Keeps your 1, 2, 3 order intact
+                    },
+                    include: {
+                        ingredients: true 
+                    }
+                },
+                type: true 
+            }
         });
         return recipesPrisma.map((recipePrisma: any) => Recipe.from(recipePrisma));
     } catch (error) {
@@ -27,9 +36,20 @@ const getRecipesByType = async (type: string): Promise<Recipe[]> => {
                     name: type
                 },
             },
+            orderBy: {
+                name: 'desc',
+            },
             include: { 
-                ingredients: true,
-                type: true
+                // Include the steps
+                steps: {
+                    orderBy: {
+                        order: 'asc' // Keeps your 1, 2, 3 order intact
+                    },
+                    include: {
+                        ingredients: true 
+                    }
+                },
+                type: true 
             }
         });
         
@@ -42,31 +62,44 @@ const getRecipesByType = async (type: string): Promise<Recipe[]> => {
 
 const createRecipe = async ({
     name,
-    type,
+    typeString,
     cookingDescription,
-    ingredients,
-}: Recipe): Promise<Recipe> => {
+    steps,
+}: RecipeInput, typeId: number): Promise<Recipe> => {
     try {
         const recipePrisma = await database.recipe.create({
             data: { 
                 name, 
                 type: {
                     connect: {
-                        id: type.id,
+                        id: typeId,
                     },
                 },
                 cookingDescription,
-                ingredients: {
-                    create: ingredients.map(ing => ({
-                        name: ing.getName(),
-                        quantity: ing.getQuantity(),
-                        unit: ing.getUnit()
+                steps: {
+                    create: steps.map(step => ({
+                        order: step.order,
+                        title: step.title,
+                        description: step.description,
+                        time: step.time,
+                        // Nest the ingredients inside each specific step
+                        ingredients: {
+                            create: step.ingredients.map(ing => ({
+                                name: ing.name,
+                                quantity: ing.quantity,
+                                unit: ing.unit
+                            }))
+                        }
                     }))
                 }
             },
             include: { 
-                ingredients: true,
-                type: true
+                type: true,
+                steps: {
+                    include: {
+                        ingredients: true
+                    }
+                }
             }
         });
         return Recipe.from(recipePrisma);
@@ -81,7 +114,11 @@ const getRecipeById = async (id: number): Promise<Recipe | null> => {
         const recipePrisma = await database.recipe.findUnique({
             where: { id },
             include: { 
-                ingredients: true,
+                steps: {
+                    include: {
+                        ingredients: true
+                    }
+                },
                 type: true
              }
         });

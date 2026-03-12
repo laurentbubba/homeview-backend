@@ -18,12 +18,15 @@ type RecipeInput = {
     name: string;
     typeString: string;
     cookingDescription: string;
-    ingredients: IngredientInput[];
+    steps: RecipeStepInput[];
 };
 
-type RecipeTypeInput = {
-    name: string;
+type RecipeStepInput = {
+    title: string;
+    order: number;
     description: string;
+    time: number;
+    ingredients: IngredientInput[];
 };
 
 type IngredientInput = {
@@ -31,6 +34,12 @@ type IngredientInput = {
     quantity: number;
     unit: string;
 };
+
+type RecipeTypeInput = {
+    name: string;
+    description: string;
+};
+
 
 type UserInput = {
     username: string;
@@ -56,4 +65,4 @@ type AuthenticationResponse = {
     }
 };
 
-export { TaskInput, CategoryInput, RecipeInput, IngredientInput, RecipeTypeInput, UserInput, AuthenticationInput, AuthenticationResponse };
+export { TaskInput, CategoryInput, RecipeInput, RecipeStepInput, IngredientInput, RecipeTypeInput, UserInput, AuthenticationInput, AuthenticationResponse };

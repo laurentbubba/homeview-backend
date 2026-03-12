@@ -41,7 +41,35 @@ model Recipe {
   typeId             Int
   type               RecipeType   @relation(fields: [typeId], references: [id])
   cookingDescription String
-  ingredients        Ingredient[]
+  steps              RecipeStep[]
+
+  @@schema("Recipes")
+}
+
+model RecipeStep {
+  id            Int           @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         Int
+  title         String
+  description   String
+  time          Int
+  recipeId      Int
+  recipe        Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredients   Ingredient[]
+
+  @@schema("Recipes")
+}
+
+model Ingredient {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  name        String
+  quantity    Float
+  unit        String
+  recipeId    Int
+  recipeStep  RecipeStep    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@schema("Recipes")
 }
@@ -51,19 +79,6 @@ model RecipeType {
   name        String   @unique
   description String?
   recipes     Recipe[]
-
-  @@schema("Recipes")
-}
-
-model Ingredient {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  quantity  Float
-  unit      String
-  recipeId  Int
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@schema("Recipes")
 }
